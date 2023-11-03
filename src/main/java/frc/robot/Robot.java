@@ -7,6 +7,9 @@
 
 package frc.robot; 
 
+import frc.robot.Constants.MotorIDs;
+
+
 import edu.wpi.first.wpilibj.drive.DifferentialDrive; 
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup; 
 import edu.wpi.first.wpilibj.XboxController; 
@@ -15,7 +18,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser; 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard; 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
- 
+
 
 /** 
  * The VM is configured to automatically run this class, and to call the functions corresponding to 
@@ -40,6 +43,11 @@ public class Robot extends TimedRobot {
   private static MotorControllerGroup right;
 
   private double autonStart;
+  private static final String nothing = "do nothing";
+  private static final String normal = "work as normal";
+  private static final String cubeOnly = "just drop off cube";
+  private String m_autoSelected;
+  private final SendableChooser<String> m_Chooser = new SendableChooser<>();
 
 
   /** 
@@ -99,6 +107,8 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     autonStart = Timer.getFPGATimestamp();
 
+    m_autoSelected = m_Chooser.getSelected();
+
     mDifferentialDrive.tankDrive(0, 0);
     arm.set(0);
     intake.set(0);
@@ -113,46 +123,19 @@ public class Robot extends TimedRobot {
 
   public void autonomousPeriodic() {
     double autonElapsed = Timer.getFPGATimestamp()-autonStart;
-    if (autonElapsed < 1) {
-      mDifferentialDrive.tankDrive(0, 0);
-      intake.set(0);
-      arm.set(0.8);
-    }
-    else if (autonElapsed < 2.3){
-      arm.set(0);
-      intake.set(0);
-      mDifferentialDrive.tankDrive(0.8, 0.8);
-    }
-    else if (autonElapsed < 2.8) {
-      mDifferentialDrive.tankDrive(0, 0);
-      arm.set(0);
-      intake.set(-0.8);
-    }
-    else if (autonElapsed < 5) {
-      arm.set(0);
-      intake.set(0);
-      mDifferentialDrive.tankDrive(-0.8, -0.8);
-    }
-    else if (autonElapsed < 6) {
-      mDifferentialDrive.tankDrive(0, 0);
-      intake.set(0);
-      arm.set(-0.8);
-    }
-    else if (autonElapsed < 7) {
-      arm.set(0);
-      intake.set(0);
-      mDifferentialDrive.tankDrive(0.8, -0.7);
-    }
-    else if (autonElapsed < 9) {
-      arm.set(0);
-      intake.set(0);
-      mDifferentialDrive.tankDrive(-0.8, -0.8);
-    }
-  } 
 
- 
- 
+    switch(m_autoSelected) {
+      case nothing:
+        autoNothing();
 
+      case normal:
+        autoNormal(autonElapsed);
+
+      case cubeOnly:
+        autoCubeOnly(autonElapsed);
+      }
+    }
+    
   /** This function is called once when teleop is enabled. */ 
 
   @Override 
@@ -237,6 +220,78 @@ public class Robot extends TimedRobot {
 
   public void simulationPeriodic() {} 
 
+
+  public void autoNothing() {
+    intake.set(0);
+    arm.set(0);
+    mDifferentialDrive.tankDrive(0,0);
+  }
+
+  public void autoNormal(double time) {
+    if (time < 1) {
+      mDifferentialDrive.tankDrive(0, 0);
+      intake.set(0);
+      arm.set(-(Constants.MotorSpeeds.armSpeed));
+    }
+    else if (time < 2.3) {
+      arm.set(0);
+      intake.set(0);
+      mDifferentialDrive.tankDrive(0.8, 0.8);
+    }
+    else if (time < 2.8) {
+      mDifferentialDrive.tankDrive(0, 0);
+      arm.set(0);
+      intake.set(-(Constants.MotorSpeeds.intakeSpeed));
+    }
+    else if (time < 5) {
+      arm.set(0);
+      intake.set(0);
+      mDifferentialDrive.tankDrive(-0.8, -0.8);
+    }
+    else if (time < 6) {
+      mDifferentialDrive.tankDrive(0, 0);
+      intake.set(0);
+      arm.set(Constants.MotorSpeeds.armSpeed);
+    }
+    else if (time < 7) {
+      arm.set(0);
+      intake.set(0);
+      mDifferentialDrive.tankDrive(0.8, -0.7);
+    }
+    else if (time < 9) {
+      arm.set(0);
+      intake.set(0);
+      mDifferentialDrive.tankDrive(-0.8, -0.8);
+    }
+    else {
+      arm.set(0);
+      intake.set(0);
+      mDifferentialDrive.tankDrive(0, 0);
+    }
+  }
+
+  public void autoCubeOnly(double time) {
+    if (time < 1) {
+      mDifferentialDrive.tankDrive(0, 0);
+      intake.set(0);
+      arm.set(-(Constants.MotorSpeeds.armSpeed));
+    }
+    else if (time < 2.3){
+      arm.set(0);
+      intake.set(0);
+      mDifferentialDrive.tankDrive(0.8, 0.8);
+    }
+    else if (time < 2.8) {
+      mDifferentialDrive.tankDrive(0, 0);
+      arm.set(0);
+      intake.set(-(Constants.MotorSpeeds.intakeSpeed));
+    }
+    else {
+      intake.set(0);
+      arm.set(0);
+      mDifferentialDrive.tankDrive(0,0);
+    }
+  }
 } 
 
  
