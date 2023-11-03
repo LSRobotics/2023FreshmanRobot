@@ -11,6 +11,6 @@ public final class Constants {
     }
     public static class MotorSpeeds {
         public static final double armSpeed = 0.2;
-        public static final double intakeSpeed = 0.8; 
+        public static final double intakeSpeed = 0.35; 
     }
 }

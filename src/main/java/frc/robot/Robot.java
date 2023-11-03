@@ -162,20 +162,20 @@ public class Robot extends TimedRobot {
 
     
     if (mXboxController.getLeftBumper() && !mXboxController.getRightBumper() && arm.getEncoder().getPosition() < 0.7) {
-      arm.set(.2);
+      arm.set(Constants.MotorSpeeds.armSpeed);
     }
     else if (mXboxController.getRightBumper() && !mXboxController.getLeftBumper() && arm.getEncoder().getPosition() > -30) {
-      arm.set(-.2);
+      arm.set(-Constants.MotorSpeeds.armSpeed);
     }
     else {
       arm.set(0);
     }
     
     if (mXboxController2.getBButton() || mXboxController2.getXButton()) { 
-      intake.set(-.35); //cubeout/conein
+      intake.set(-Constants.MotorSpeeds.intakeSpeed); //cubeout/conein
     } 
     else if (mXboxController2.getYButton() || mXboxController2.getAButton()) { 
-      intake.set(.35); //cubein/coneout 
+      intake.set(Constants.MotorSpeeds.intakeSpeed); //cubein/coneout 
     }
     else { 
       intake.set(0);
