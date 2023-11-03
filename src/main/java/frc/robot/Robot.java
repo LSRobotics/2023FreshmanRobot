@@ -7,14 +7,10 @@
 
 package frc.robot; 
 
-import frc.robot.Constants.MotorIDs;
-
 import edu.wpi.first.wpilibj.drive.DifferentialDrive; 
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup; 
 import edu.wpi.first.wpilibj.XboxController; 
 import edu.wpi.first.wpilibj.TimedRobot;
-
-import java.io.Console;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -91,7 +87,7 @@ public class Robot extends TimedRobot {
   @Override 
 
   public void robotPeriodic() { 
-    System.out.println(arm.getEncoder().getPosition());
+    //System.out.println(arm.getEncoder().getPosition());
   } 
 
  
@@ -130,7 +126,7 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
     double autonElapsed = Timer.getFPGATimestamp()-autonStart;
 
-    switch(m_autoSelected) {
+    switch(cubeOnly) {
       case nothing:
         autoNothing();
 
@@ -245,37 +241,39 @@ public class Robot extends TimedRobot {
   }
 
   public void autoNormal(double time) {
-    if (time < 1) {
+    // needs fine tuning
+    
+    if (time < 0.5) {
       mDifferentialDrive.tankDrive(0, 0);
       intake.set(0);
       arm.set(-(Constants.MotorSpeeds.armSpeed));
     }
-    else if (time < 2.3) {
+    else if (time < 1.15) {
       arm.set(0);
       intake.set(0);
       mDifferentialDrive.tankDrive(0.8, 0.8);
     }
-    else if (time < 2.8) {
+    else if (time < 1.4) {
       mDifferentialDrive.tankDrive(0, 0);
       arm.set(0);
       intake.set(-(Constants.MotorSpeeds.intakeSpeed));
     }
-    else if (time < 5) {
+    else if (time < 2.5) {
       arm.set(0);
       intake.set(0);
       mDifferentialDrive.tankDrive(-0.8, -0.8);
     }
-    else if (time < 6) {
+    else if (time < 3) {
       mDifferentialDrive.tankDrive(0, 0);
       intake.set(0);
       arm.set(Constants.MotorSpeeds.armSpeed);
     }
-    else if (time < 7) {
+    else if (time < 3.5) {
       arm.set(0);
       intake.set(0);
       mDifferentialDrive.tankDrive(0.8, -0.7);
     }
-    else if (time < 9) {
+    else if (time < 4.5) {
       arm.set(0);
       intake.set(0);
       mDifferentialDrive.tankDrive(-0.8, -0.8);
@@ -288,20 +286,31 @@ public class Robot extends TimedRobot {
   }
 
   public void autoCubeOnly(double time) {
-    if (time < 1) {
+    System.out.println(time);
+    if (time < 1.8) {
       mDifferentialDrive.tankDrive(0, 0);
       intake.set(0);
       arm.set(-(Constants.MotorSpeeds.armSpeed));
     }
-    else if (time < 2.3){
+    else if (time < 2.4){
       arm.set(0);
       intake.set(0);
-      mDifferentialDrive.tankDrive(0.8, 0.8);
+      mDifferentialDrive.tankDrive(-0.8,-0.8);
     }
-    else if (time < 2.8) {
+    else if (time < 2.9) {
+      mDifferentialDrive.tankDrive(0, 0);
+      arm.set(0);
+      intake.set(0);
+    }
+    else if (time < 3.9) {
       mDifferentialDrive.tankDrive(0, 0);
       arm.set(0);
       intake.set(-(Constants.MotorSpeeds.intakeSpeed));
+    }
+    else if (time < 5) {
+      arm.set(0);
+      intake.set(0);
+      mDifferentialDrive.tankDrive(0.8, 0.8);
     }
     else {
       intake.set(0);
@@ -309,9 +318,4 @@ public class Robot extends TimedRobot {
       mDifferentialDrive.tankDrive(0,0);
     }
   }
-} 
-
- 
- 
-
- 
+}
