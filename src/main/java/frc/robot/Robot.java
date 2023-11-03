@@ -10,7 +10,8 @@ package frc.robot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive; 
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup; 
 import edu.wpi.first.wpilibj.XboxController; 
-import edu.wpi.first.wpilibj.TimedRobot; 
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser; 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard; 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -37,6 +38,8 @@ public class Robot extends TimedRobot {
 
   private static MotorControllerGroup left;
   private static MotorControllerGroup right;
+
+  private double autonStart;
 
 
   /** 
@@ -94,7 +97,11 @@ public class Robot extends TimedRobot {
   @Override 
 
   public void autonomousInit() {
+    autonStart = Timer.getFPGATimestamp();
 
+    mDifferentialDrive.tankDrive(0, 0);
+    arm.set(0);
+    intake.set(0);
   } 
 
  
@@ -105,7 +112,42 @@ public class Robot extends TimedRobot {
   @Override 
 
   public void autonomousPeriodic() {
-
+    double autonElapsed = Timer.getFPGATimestamp()-autonStart;
+    if (autonElapsed < 1) {
+      mDifferentialDrive.tankDrive(0, 0);
+      intake.set(0);
+      arm.set(0.8);
+    }
+    else if (autonElapsed < 2.3){
+      arm.set(0);
+      intake.set(0);
+      mDifferentialDrive.tankDrive(0.8, 0.8);
+    }
+    else if (autonElapsed < 2.8) {
+      mDifferentialDrive.tankDrive(0, 0);
+      arm.set(0);
+      intake.set(-0.8);
+    }
+    else if (autonElapsed < 5) {
+      arm.set(0);
+      intake.set(0);
+      mDifferentialDrive.tankDrive(-0.8, -0.8);
+    }
+    else if (autonElapsed < 6) {
+      mDifferentialDrive.tankDrive(0, 0);
+      intake.set(0);
+      arm.set(-0.8);
+    }
+    else if (autonElapsed < 7) {
+      arm.set(0);
+      intake.set(0);
+      mDifferentialDrive.tankDrive(0.8, -0.7);
+    }
+    else if (autonElapsed < 9) {
+      arm.set(0);
+      intake.set(0);
+      mDifferentialDrive.tankDrive(-0.8, -0.8);
+    }
   } 
 
  
