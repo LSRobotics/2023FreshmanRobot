@@ -11,6 +11,9 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup; 
 import edu.wpi.first.wpilibj.XboxController; 
 import edu.wpi.first.wpilibj.TimedRobot;
+
+import java.io.Console;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
  
@@ -25,6 +28,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 public class Robot extends TimedRobot {
 
   public static XboxController mXboxController; 
+  public static XboxController mXboxController2;
   public static DifferentialDrive mDifferentialDrive; 
 
   private static CANSparkMax frontRightDrive; 
@@ -47,12 +51,13 @@ public class Robot extends TimedRobot {
 
   public void robotInit() {
     mXboxController = new XboxController(0);
+    mXboxController2 = new XboxController(1);
     frontRightDrive = new CANSparkMax(14, MotorType.kBrushed);
     frontLeftDrive = new CANSparkMax(13, MotorType.kBrushed);
     backLeftDrive = new CANSparkMax(11, MotorType.kBrushed);
     backRightDrive = new CANSparkMax(12, MotorType.kBrushed);
-    arm = new CANSparkMax(21, MotorType.kBrushed);
-    intake = new CANSparkMax(22, MotorType.kBrushed);
+    arm = new CANSparkMax(21, MotorType.kBrushless);
+    intake = new CANSparkMax(22, MotorType.kBrushless);
 
     right = new MotorControllerGroup(backRightDrive, frontRightDrive);
     right.setInverted(true);
@@ -74,7 +79,7 @@ public class Robot extends TimedRobot {
   @Override 
 
   public void robotPeriodic() { 
-
+    System.out.println(arm.getEncoder().getPosition());
   } 
 
  
@@ -125,15 +130,26 @@ public class Robot extends TimedRobot {
   @Override 
 
   public void teleopPeriodic() {
-    mDifferentialDrive.tankDrive(mXboxController.getLeftY(), mXboxController.getRightY());
+    double leftSpeed = mXboxController.getLeftY()*Math.abs(mXboxController.getLeftY());
+    double rightSpeed = mXboxController.getRightX()*Math.abs(mXboxController.getRightX());
+    mDifferentialDrive.arcadeDrive(leftSpeed, rightSpeed);
+
     
-    arm.set(mXboxController.getRightTriggerAxis()-mXboxController.getLeftTriggerAxis());
+    if (mXboxController.getLeftBumper() && !mXboxController.getRightBumper() && arm.getEncoder().getPosition() < 0.7) {
+      arm.set(.2);
+    }
+    else if (mXboxController.getRightBumper() && !mXboxController.getLeftBumper() && arm.getEncoder().getPosition() > -30) {
+      arm.set(-.2);
+    }
+    else {
+      arm.set(0);
+    }
     
-    if (mXboxController.getBButton() || mXboxController.getXButton()) { 
-      intake.set(-.2); //cubeout/conein
+    if (mXboxController2.getBButton() || mXboxController2.getXButton()) { 
+      intake.set(-.35); //cubeout/conein
     } 
-    else if (mXboxController.getYButton() || mXboxController.getAButton()) { 
-      intake.set(.2); //cubein/coneout 
+    else if (mXboxController2.getYButton() || mXboxController2.getAButton()) { 
+      intake.set(.35); //cubein/coneout 
     }
     else { 
       intake.set(0);
