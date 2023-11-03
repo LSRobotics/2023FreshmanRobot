@@ -10,10 +10,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive; 
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup; 
 import edu.wpi.first.wpilibj.XboxController; 
-import edu.wpi.first.wpilibj.TimedRobot; 
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser; 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard; 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import edu.wpi.first.wpilibj.TimedRobot;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
  
 
 /** 
@@ -28,12 +27,12 @@ public class Robot extends TimedRobot {
   public static XboxController mXboxController; 
   public static DifferentialDrive mDifferentialDrive; 
 
-  private static WPI_TalonSRX frontRightDrive; 
-  private static WPI_TalonSRX frontLeftDrive; 
-  private static WPI_TalonSRX backRightDrive;
-  private static WPI_TalonSRX backLeftDrive;
-  private static WPI_TalonSRX arm;
-  private static WPI_TalonSRX intake;
+  private static CANSparkMax frontRightDrive; 
+  private static CANSparkMax frontLeftDrive; 
+  private static CANSparkMax backRightDrive;
+  private static CANSparkMax backLeftDrive;
+  private static CANSparkMax arm;
+  private static CANSparkMax intake;
 
   private static MotorControllerGroup left;
   private static MotorControllerGroup right;
@@ -48,14 +47,15 @@ public class Robot extends TimedRobot {
 
   public void robotInit() {
     mXboxController = new XboxController(0);
-    frontRightDrive = new WPI_TalonSRX(11);
-    frontLeftDrive = new WPI_TalonSRX(13);
-    backLeftDrive = new WPI_TalonSRX(12);
-    backRightDrive = new WPI_TalonSRX(14);
-    arm = new WPI_TalonSRX(21);
-    intake = new WPI_TalonSRX(22);
+    frontRightDrive = new CANSparkMax(14, MotorType.kBrushed);
+    frontLeftDrive = new CANSparkMax(13, MotorType.kBrushed);
+    backLeftDrive = new CANSparkMax(11, MotorType.kBrushed);
+    backRightDrive = new CANSparkMax(12, MotorType.kBrushed);
+    arm = new CANSparkMax(21, MotorType.kBrushed);
+    intake = new CANSparkMax(22, MotorType.kBrushed);
 
     right = new MotorControllerGroup(backRightDrive, frontRightDrive);
+    right.setInverted(true);
     left = new MotorControllerGroup(backLeftDrive, frontLeftDrive);
     mDifferentialDrive = new DifferentialDrive(left, right);
   } 
@@ -130,10 +130,10 @@ public class Robot extends TimedRobot {
     arm.set(mXboxController.getRightTriggerAxis()-mXboxController.getLeftTriggerAxis());
     
     if (mXboxController.getBButton() || mXboxController.getXButton()) { 
-      intake.set(-1); //cubeout/conein
+      intake.set(-.2); //cubeout/conein
     } 
     else if (mXboxController.getYButton() || mXboxController.getAButton()) { 
-      intake.set(1); //cubein/coneout 
+      intake.set(.2); //cubein/coneout 
     }
     else { 
       intake.set(0);
